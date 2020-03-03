@@ -2,13 +2,18 @@
 
 namespace common\models;
 
+use yii\helpers\Url; 
+use yii\helpers\Html;
 
-
+use backend\models\Estado; 
+use backend\models\Rol; 
 use Yii;
-
+use yii\helpers\ArrayHelper;
 use yii\base\NotSupportedException;
-
+use backend\models\TipoUsuario; 
 use yii\behaviors\TimestampBehavior;
+
+use frontend\models\Perfil;
 
 use yii\db\ActiveRecord;
 
@@ -117,6 +122,9 @@ class User extends ActiveRecord implements IdentityInterface
             ['estado_id', 'default', 'value' => self::ESTADO_ACTIVO],
 
             ['rol_id', 'default', 'value' => 1],
+            [['rol_id'],'in', 'range'=>array_keys($this->getRolLista())],
+            [['estado_id'],'in', 'range'=>array_keys($this->getEstadoLista())],
+            [['tipo_usuario_id'],'in', 'range'=>array_keys($this->getTipoUsuarioLista())],
 
             ['tipo_usuario_id', 'default', 'value' => 1],
 
@@ -151,6 +159,23 @@ class User extends ActiveRecord implements IdentityInterface
         return [
 
             /* Sus otras etiquetas de atributo */
+            'rolNombre' => Yii::t('app', 'Rol'),
+
+        'estadoNombre' => Yii::t('app', 'Estado'),
+
+        'perfilId' => Yii::t('app', 'Perfil'),
+
+        'perfilLink' => Yii::t('app', 'Perfil'),
+
+        'userLink' => Yii::t('app', 'User'),
+
+        'username' => Yii::t('app', 'User'),
+
+        'tipoUsuarioNombre' => Yii::t('app', 'Tipo Usuario'),
+
+        'tipoUsuarioId' => Yii::t('app', 'Tipo Usuario'),
+
+        'userIdLink' => Yii::t('app', 'ID'),
 
         ];
 
@@ -420,4 +445,242 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $this->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
     }
+    
+    public function getPerfil()
+{
+return $this->hasOne(Perfil::className(), ['user_id' => 'id']);
+}
+
+/**
+
+ * relación get rol
+
+ *
+
+ */
+
+public function getRol()
+
+{
+
+    return $this->hasOne(Rol::className(), ['id' => 'rol_id']);
+
+}
+
+/**
+
+ * get rol nombre
+
+ *
+
+ */
+
+public function getRolNombre()
+
+{
+
+    return $this->rol ? $this->rol->rol_nombre : '- sin rol -';
+
+}
+
+/**
+
+ * get lista de roles para lista desplegable
+
+ */
+
+public static function getRolLista()
+
+{
+
+    $dropciones = Rol::find()->asArray()->all();
+
+    return ArrayHelper::map($dropciones, 'id', 'rol_nombre');
+
+}
+
+/**
+
+ * relación get estado
+
+ *
+
+ */
+
+public function getEstado()
+
+{
+
+    return $this->hasOne(Estado::className(), ['id' => 'estado_id']);
+
+}
+
+/**
+
+ * * get estado nombre
+
+ *
+
+ */
+
+public function getEstadoNombre()
+
+{
+
+    return $this->estado ? $this->estado->estado_nombre : '- sin estado -';
+
+}
+
+/**
+
+ * get lista de estados para lista desplegable
+
+ */
+
+public static function getEstadoLista()
+
+{
+
+    $dropciones = Estado::find()->asArray()->all();
+
+    return ArrayHelper::map($dropciones, 'id', 'estado_nombre');
+
+}
+
+public function getTipoUsuario()
+
+{
+
+    return $this->hasOne(TipoUsuario::className(), ['id' => 'tipo_usuario_id']);
+
+}
+
+/**
+
+ * get tipo usuario nombre
+
+ *
+
+ */
+
+public function getTipoUsuarioNombre()
+
+{
+
+    return $this->tipoUsuario ? $this->tipoUsuario->tipo_usuario_nombre : '- sin tipo usuario -';
+
+}
+
+/**
+
+ * get lista de tipos de usuario para lista desplegable
+
+ */
+
+public static function getTipoUsuarioLista()
+
+{
+
+    $dropciones = TipoUsuario::find()->asArray()->all();
+
+    return ArrayHelper::map($dropciones, 'id', 'tipo_usuario_nombre');
+
+}
+
+/**
+
+ * get tipo usuario id
+
+ *
+
+ */
+
+public function getTipoUsuarioId()
+
+{
+
+    return $this->tipoUsuario ? $this->tipoUsuario->id : 'ninguno';
+
+}
+
+/**
+
+ * @getPerfilId
+
+ *
+
+ */
+
+public function getPerfilId()
+
+{
+
+    return $this->perfil ? $this->perfil->id : 'ninguno';
+
+}
+
+/**
+
+ * @getPerfilLink
+
+ *
+
+ */
+
+
+
+public function getPerfilLink()
+
+{
+
+    $url = Url::to(['perfil/view', 'id'=>$this->perfilId]);
+
+    $opciones = [];
+
+    return Html::a($this->perfil ? 'perfil' : 'ninguno', $url, $opciones);
+
+}
+
+/**
+
+ * get user id Link
+
+ *
+
+ */
+
+public function getUserIdLink()
+
+{
+
+    $url = Url::to(['user/update', 'id'=>$this->id]);
+
+    $opciones = [];
+
+    return Html::a($this->id, $url, $opciones);
+
+}
+
+/**
+
+ * @getUserLink
+
+ *
+
+ */
+
+
+
+public function getUserLink()
+
+{
+
+    $url = Url::to(['user/view', 'id'=>$this->id]);
+
+    $opciones = [];
+
+    return Html::a($this->username, $url, $opciones);
+
+}
+
 } 
