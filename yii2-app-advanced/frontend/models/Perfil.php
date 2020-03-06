@@ -151,7 +151,7 @@ public static function getGeneroLista()
 
 {
 
-    $droptions = Gender::find()->asArray()->all();
+    $droptions = Genero::find()->asArray()->all();
 
     return ArrayHelper::map($droptions, 'id', 'genero_nombre');
 

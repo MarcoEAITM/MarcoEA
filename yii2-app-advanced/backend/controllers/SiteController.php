@@ -1,6 +1,9 @@
 <?php
 namespace backend\controllers;
 
+use yii\web\NotFoundHttpException; 
+use common\models\PermisosHelpers;
+
 use Yii;
 use yii\web\Controller;
 use yii\filters\VerbFilter;

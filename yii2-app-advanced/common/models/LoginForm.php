@@ -13,7 +13,7 @@ class LoginForm extends Model
     public $password;
     public $rememberMe = true;
 
-    private $_user = false;
+    private $_user;
 
 
     /**
@@ -75,4 +75,19 @@ class LoginForm extends Model
 
         return $this->_user;
     }
+    public function loginAdmin()
+
+{
+
+    if (($this->validate()) && PermisosHelpers::requerirMinimoRol('Admin', $this->getUser()->id)) {
+
+        return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600 * 24 * 30 : 0);
+
+    } else {
+
+        throw new NotFoundHttpException('No Pasarás.');
+
+    }
+
+}
 }
